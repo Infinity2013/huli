@@ -11,6 +11,7 @@ import time
 
 
 
+
 def getPos(tag):
     bounds = tag.get('bounds')
     bounds = map(int, re.findall(r'\d+', bounds))
@@ -122,7 +123,7 @@ def waitForEntry(d, name):
                 bs = dumpPage(d)
                 title, options, _, confirm = findKeyTag(bs)
                 queryHash = genHash(title, options)
-                queryCmd = 'select * from n4n5 where hash="%s"' % queryHash
+                queryCmd = 'select * from ' + table + ' where hash="%s"' % queryHash
                 localCursor = cursor.execute(queryCmd)
                 res = localCursor.fetchone()
                 if res is None:
@@ -143,7 +144,7 @@ def waitForEntry(d, name):
                 titleText = getText(title)
                 ansText = parseAns(options, ans)
                 optionText = "|".join([getText(option) for option in options])
-                insertCmd = 'insert or ignore into n4n5(hash, title, options, ans) values("%s", "%s", "%s", "%s")' % (
+                insertCmd = 'insert or ignore into ' + table + '(hash, title, options, ans) values("%s", "%s", "%s", "%s")' % (
                 queryHash, titleText, optionText, ansText)
                 cursor.execute(insertCmd)
 
@@ -155,7 +156,7 @@ def crawler(d):
     bs = dumpPage(d)
     title, options, _, confirm = findKeyTag(bs)
     queryHash = genHash(title, options)
-    queryCmd = 'select * from n4n5 where hash="%s"' % queryHash
+    queryCmd = 'select * from ' + table + ' where hash="%s"' % queryHash
     localCursor = cursor.execute(queryCmd)
     res = localCursor.fetchone()
     if res is None:
@@ -176,7 +177,7 @@ def crawler(d):
     titleText = getText(title)
     ansText = parseAns(options, ans)
     optionText = "|".join([getText(option) for option in options])
-    insertCmd = 'insert or ignore into n4n5(hash, title, options, ans) values("%s", "%s", "%s", "%s")' % (queryHash, titleText, optionText, ansText)
+    insertCmd = 'insert or ignore into ' + table +'(hash, title, options, ans) values("%s", "%s", "%s", "%s")' % (queryHash, titleText, optionText, ansText)
     cursor.execute(insertCmd)
 
     db.commit()
@@ -186,6 +187,12 @@ d = Device()
 db = sqlite3.connect('nurse-asistant.db')
 cursor = db.cursor()
 cursor.execute('create table if not exists n4n5(hash varchar[255] primary key, title varchar[255], options varchar[255], ans varchar[255])')
+cursor.execute('create table if not exists n1n3(hash varchar[255] primary key, title varchar[255], options varchar[255], ans varchar[255])')
+cursor.execute('create table if not exists n6(hash varchar[255] primary key, title varchar[255], options varchar[255], ans varchar[255])')
+
+
+
+table = 'n6'
 while True:
     res = checkExit(d)
     if res:
