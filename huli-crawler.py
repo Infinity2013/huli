@@ -118,40 +118,7 @@ def waitForEntry(d, name):
                 break
         if entry is None:
             time.sleep(2)
-
-            def crawler(d):
-                bs = dumpPage(d)
-                title, options, _, confirm = findKeyTag(bs)
-                queryHash = genHash(title, options)
-                queryCmd = 'select * from ' + table + ' where hash="%s"' % queryHash
-                localCursor = cursor.execute(queryCmd)
-                res = localCursor.fetchone()
-                if res is None:
-                    click(options[0], d)
-                    time.sleep(1)
-                    click(confirm, d)
-                else:
-                    rightText = res[-1]
-                    for option in options:
-                        if rightText == getText(option):
-                            click(option, d)
-                            break
-                    time.sleep(1)
-                    click(confirm, d)
-
-                bs = dumpPage(d)
-                title, options, ans, confirm = findKeyTag(bs)
-                titleText = getText(title)
-                ansText = parseAns(options, ans)
-                optionText = "|".join([getText(option) for option in options])
-                insertCmd = 'insert or ignore into ' + table + '(hash, title, options, ans) values("%s", "%s", "%s", "%s")' % (
-                queryHash, titleText, optionText, ansText)
-                cursor.execute(insertCmd)
-
-                db.commit()
-                click(confirm, d)
-
-
+            
 def crawler(d):
     bs = dumpPage(d)
     title, options, _, confirm = findKeyTag(bs)
@@ -192,7 +159,7 @@ cursor.execute('create table if not exists n6(hash varchar[255] primary key, tit
 
 
 
-table = 'n6'
+table = 'n4n5'
 while True:
     res = checkExit(d)
     if res:
